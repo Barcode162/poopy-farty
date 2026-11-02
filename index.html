@@ -477,14 +477,14 @@ function ridgeShape(w, base, h, sharp, seed, steps = 90) {
 }
 const flat = (c) => new THREE.MeshBasicMaterial({ color: c, fog: false });
 const mFar2 = flat(pal.far2), mFar = flat(pal.far), mMid = flat(pal.mid), mTree = flat(pal.mid.clone());
-const mNear = toon(pal.near), mRock = toon(pal.dirt), mGround = toon(pal.ground), mDirt = toon(pal.dirt), mFore = flat(pal.near.clone());
+const mNear = toon(pal.near), mRock = toon(pal.dirt), mGround = toon(pal.ground), mDirt = toon(pal.dirt);
 const mTuft = toon(pal.ground.clone());
 
 makeLayer(-120, 0.03, 260, () => new THREE.Mesh(new THREE.ShapeGeometry(ridgeShape(260, -6, 26, true, 1.3).shape), mFar2));
 makeLayer(-80, 0.07, 180, () => new THREE.Mesh(new THREE.ShapeGeometry(ridgeShape(180, -8, 18, true, 0.4).shape), mFar));
 const treeCone = new THREE.ConeGeometry(1.4, 4.2, 7), treeTrunk = new THREE.BoxGeometry(0.35, 1.4, 0.2), roundTree = new THREE.SphereGeometry(1.6, 10, 8);
 makeLayer(-45, 0.18, 110, (i) => {
-  const g = new THREE.Group(); const r = ridgeShape(110, -11, 7, false, i * 0.0 + 2.1);
+  const g = new THREE.Group(); const r = ridgeShape(110, -8, 7, false, i * 0.0 + 2.1);
   g.add(new THREE.Mesh(new THREE.ShapeGeometry(r.shape), mMid));
   for (let k = 0; k < 16; k++) {
     const x = -52 + k * 6.6 + Math.random() * 3, y = r.heightAt(x) - 0.4, tree = new THREE.Group();
@@ -519,32 +519,107 @@ makeLayer(-14, 0.5, 50, () => {
   }
   return g;
 });
-// the floor you can faceplant on
-const tuftGeo = new THREE.ConeGeometry(0.18, 0.7, 5), flowerGeo = new THREE.SphereGeometry(0.16, 8, 6), postGeo = new THREE.BoxGeometry(0.3, 1.6, 0.3), railGeo = new THREE.BoxGeometry(4.2, 0.18, 0.12);
+// ---------- 3D terrain: the floor you can faceplant on ----------
+// Height is periodic in x (period = tile width), so tiles join without seams.
+const TILE = 40;
+function terrainH(x, z) {
+  const u = (x / TILE) * Math.PI * 2;
+  const atLine = Math.exp(-((z + 0.2) ** 2) / 3.5);           // flat where you fly
+  const back = Math.max(0, -z - 2.5), front = Math.max(0, z - 2.5);
+  const roll = Math.sin(u * 2 + z * 0.18) * 0.6 + Math.sin(u * 5 - z * 0.31 + 1.7) * 0.35 + Math.sin(u * 9 + z * 0.55 + 0.4) * 0.15;
+  const amp = (0.45 + Math.min(back, 24) * 0.065 + front * 0.03) * (1 - atLine * 0.88);
+  return -PLAY_H - 0.05 + roll * amp + back * 0.028 - front * 0.11;
+}
+function terrainN(x, z) { const e = 0.05; return new THREE.Vector3(terrainH(x - e, z) - terrainH(x + e, z), 2 * e, terrainH(x, z - e) - terrainH(x, z + e)).normalize(); }
+const mTerrain = toon(pal.ground, { vertexColors: true });
+const mPath = toon(pal.dirt, { polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+const mStone = toon('#9a96a6', { flatShading: true }), mBush = toon(pal.near), mPine = toon(pal.near), mWood = toon('#8a5a3b');
+const mCap = toon('#ff4d5e'), mStem = toon('#fff4e0');
+const terrainGeo = (() => {
+  const g = new THREE.PlaneGeometry(TILE, 58, 64, 56); g.rotateX(-Math.PI / 2); g.translate(0, 0, -11);
+  const p = g.attributes.position, n = g.attributes.normal, col = new Float32Array(p.count * 3);
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i), z = p.getZ(i), y = terrainH(x, z); p.setY(i, y);
+    const nn = terrainN(x, z); n.setXYZ(i, nn.x, nn.y, nn.z);
+    // lighter on bumps, darker in dips, faint mowing stripes near the play line
+    const v = 0.86 + clamp((y - terrainH(x, z) * 0 + PLAY_H) * 0.05, -0.08, 0.1) + Math.sin(x * 0.9 + Math.sin(z * 0.7) * 2) * 0.04 + (Math.abs(z) < 6 ? Math.sign(Math.sin(x * 0.6)) * 0.025 : 0);
+    col[i * 3] = col[i * 3 + 1] = col[i * 3 + 2] = clamp(v, 0.7, 1);
+  }
+  g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  return g;
+})();
+const pathGeo = (() => {
+  const seg = 80, pos = [], idx = [];
+  for (let i = 0; i <= seg; i++) {
+    const x = -TILE / 2 + (TILE * i) / seg, zc = -5 + Math.sin((x / TILE) * Math.PI * 2) * 1.6;
+    for (const off of [-0.9, 0.9]) pos.push(x, terrainH(x, zc + off) + 0.03, zc + off);
+    if (i < seg) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals(); return g;
+})();
+const pathZ = (x) => -5 + Math.sin((x / TILE) * Math.PI * 2) * 1.6;
+const bladeGeo = new THREE.ConeGeometry(0.07, 0.55, 3); bladeGeo.translate(0, 0.27, 0);
+const stoneGeo = new THREE.DodecahedronGeometry(0.6, 0), flowerGeo = new THREE.SphereGeometry(0.14, 8, 6), postGeo = new THREE.BoxGeometry(0.22, 1.3, 0.22);
+const capGeo = new THREE.SphereGeometry(0.42, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), stemGeo = new THREE.CylinderGeometry(0.13, 0.17, 0.55, 10), dotGeo = new THREE.SphereGeometry(0.06, 6, 4);
+const pineGeo = new THREE.ConeGeometry(1, 1.6, 8), stumpGeo = new THREE.CylinderGeometry(0.4, 0.5, 0.6, 12), bushGeo = new THREE.SphereGeometry(0.6, 12, 10);
 const flowerMats = ['#ffffff', '#ffd23f', '#ff8fb8', '#b07cff'].map((c) => toon(c));
-makeLayer(0, 1, 40, () => {
+const dummy = new THREE.Object3D();
+function onGround(obj, x, z, sink = 0) { obj.position.set(x, terrainH(x, z) - sink, z); return obj; }
+const rx = () => -TILE / 2 + Math.random() * TILE;
+makeLayer(0, 1, TILE, () => {
   const g = new THREE.Group();
-  const top = new THREE.Mesh(new THREE.BoxGeometry(40.05, 1.2, 10), mGround); top.position.set(0, -PLAY_H - 0.6, -2); g.add(top);
-  const soil = new THREE.Mesh(new THREE.BoxGeometry(40.05, 30, 10), mDirt); soil.position.set(0, -PLAY_H - 16.2, -2); g.add(soil);
-  for (let k = 0; k < 40; k++) {
-    const t = new THREE.Mesh(tuftGeo, mTuft); t.position.set(-20 + Math.random() * 40, -PLAY_H + 0.2, -6 + Math.random() * 7); t.rotation.z = (Math.random() - 0.5) * 0.5; g.add(t);
+  g.add(new THREE.Mesh(terrainGeo, mTerrain));
+  g.add(new THREE.Mesh(pathGeo, mPath));
+  // 3D grass, thickest up front
+  const N = 700, grass = new THREE.InstancedMesh(bladeGeo, mTuft, N);
+  for (let i = 0; i < N; i++) {
+    const x = rx(), z = 14 - Math.pow(Math.random(), 1.4) * 30;
+    if (Math.abs(z - pathZ(x)) < 1) { i--; continue; }
+    dummy.position.set(x, terrainH(x, z) - 0.05, z); dummy.rotation.set((Math.random() - 0.5) * 0.5, Math.random() * 3, (Math.random() - 0.5) * 0.5);
+    const s = 0.7 + Math.random() * (z > 3 ? 1.1 : 0.6); dummy.scale.set(s, s * (0.8 + Math.random() * 0.6), s); dummy.updateMatrix(); grass.setMatrixAt(i, dummy.matrix);
   }
-  for (let k = 0; k < 10; k++) { const f = new THREE.Mesh(flowerGeo, flowerMats[k % 4]); f.position.set(-20 + Math.random() * 40, -PLAY_H + 0.25, -5 + Math.random() * 6); g.add(f); }
-  const fx = -12 + Math.random() * 10;
-  for (let k = 0; k < 4; k++) { const p = new THREE.Mesh(postGeo, mDirt); p.position.set(fx + k * 4, -PLAY_H + 0.6, -5.5); g.add(p); }
-  for (const yy of [0.4, 0.95]) { const r = new THREE.Mesh(new THREE.BoxGeometry(12.3, 0.16, 0.12), mDirt); r.position.set(fx + 6, -PLAY_H + yy, -5.45); g.add(r); }
-  return g;
-});
-const bladeGeo = new THREE.ConeGeometry(0.28, 1.9, 4);
-makeLayer(5, 1.3, 36, () => {
-  const g = new THREE.Group();
+  g.add(grass);
+  for (let k = 0; k < 14; k++) { const x = rx(), z = 6 - Math.random() * 16; if (Math.abs(z - pathZ(x)) < 1) continue; g.add(onGround(new THREE.Mesh(flowerGeo, flowerMats[k % 4]), x, z, -0.25)); }
+  // stones: small ones up front, bigger ones behind the play line
   for (let k = 0; k < 9; k++) {
-    const cl = new THREE.Group(), x = -18 + Math.random() * 36;
-    for (let j = 0; j < 5; j++) { const b = new THREE.Mesh(bladeGeo, mFore); b.position.set(j * 0.35 - 0.7, 0, 0); b.rotation.z = (j - 2) * 0.22; b.scale.y = 0.7 + Math.random() * 0.6; cl.add(b); }
-    cl.position.set(x, -PLAY_H - 1.6, 0); g.add(cl);
+    const front = k < 3, x = rx(), z = front ? 3 + Math.random() * 9 : -2.5 - Math.random() * 20;
+    const st = onGround(part(stoneGeo, mStone, [0, 0, 0], 1.06), x, z, 0.2); st.scale.set(1, 0.6 + Math.random() * 0.4, 1).multiplyScalar(front ? 0.4 + Math.random() * 0.3 : 0.6 + Math.random() * 0.9); st.rotation.y = Math.random() * 3; g.add(st);
+  }
+  // bushes
+  for (let k = 0; k < 6; k++) {
+    const x = rx(), z = -3 - Math.random() * 18, b = new THREE.Group();
+    for (let j = 0; j < 3; j++) { const s = part(bushGeo, mBush, [j * 0.55 - 0.55, j === 1 ? 0.25 : 0, (Math.random() - 0.5) * 0.4], 1.05); s.scale.setScalar(0.8 + Math.random() * 0.4); b.add(s); }
+    g.add(onGround(b, x, z, 0.1));
+  }
+  // mushrooms
+  for (let k = 0; k < 4; k++) {
+    const x = rx(), z = -2.5 - Math.random() * 6, m = new THREE.Group();
+    m.add(part(stemGeo, mStem, [0, 0.27, 0], 1.08)); m.add(part(capGeo, mCap, [0, 0.5, 0], 1.06));
+    for (let d = 0; d < 5; d++) { const a = d * 1.26, dot = new THREE.Mesh(dotGeo, mStem); dot.position.set(Math.cos(a) * 0.26, 0.78 - (d % 2) * 0.08, Math.sin(a) * 0.26); m.add(dot); }
+    m.scale.setScalar(0.8 + Math.random() * 0.8); g.add(onGround(m, x, z));
+  }
+  // stumps
+  for (let k = 0; k < 2; k++) { const x = rx(), z = -3 - Math.random() * 10; const s = onGround(part(stumpGeo, mWood, [0, 0, 0], 1.06), x, z, -0.2); g.add(s); }
+  // fence along the path
+  const fx = rx() * 0.6;
+  for (let k = 0; k < 5; k++) { const x = fx + k * 2.4; g.add(onGround(part(postGeo, mWood, [0, 0, 0], 1.1), x, pathZ(x) - 1.3, -0.55)); }
+  for (const yy of [0.35, 0.85]) for (let k = 0; k < 4; k++) {
+    const x0 = fx + k * 2.4, x1 = x0 + 2.4, z0 = pathZ(x0) - 1.3, z1 = pathZ(x1) - 1.3, y0 = terrainH(x0, z0), y1 = terrainH(x1, z1);
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(Math.hypot(x1 - x0, z1 - z0) + 0.1, 0.12, 0.1), mWood);
+    rail.position.set((x0 + x1) / 2, (y0 + y1) / 2 + yy, (z0 + z1) / 2); rail.rotation.y = -Math.atan2(z1 - z0, x1 - x0); rail.rotation.z = Math.atan2(y1 - y0, x1 - x0); g.add(rail);
+  }
+  // pine forest on the far slopes
+  for (let k = 0; k < 14; k++) {
+    const x = rx(), z = -16 - Math.random() * 22, t = new THREE.Group();
+    t.add(new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.2, 0.8, 6), mWood)).position.y = 0.4;
+    for (let j = 0; j < 3; j++) { const c = new THREE.Mesh(pineGeo, mPine); c.position.y = 1.1 + j * 0.75; c.scale.setScalar(1 - j * 0.25); t.add(c); }
+    t.scale.setScalar(1 + Math.random() * 1.2); g.add(onGround(t, x, z, 0.1));
   }
   return g;
 });
+// soft blob shadow under the player so you can feel the height
+const shadowMat = new THREE.MeshBasicMaterial({ color: '#1b1024', transparent: true, opacity: 0.3, depthWrite: false });
+const playerShadow = new THREE.Mesh(new THREE.CircleGeometry(0.7, 24), shadowMat); playerShadow.rotation.x = -Math.PI / 2; scene.add(playerShadow);
 // fireflies (night)
 const ffGeo = new THREE.BufferGeometry(); const ffBase = [];
 for (let i = 0; i < 60; i++) ffBase.push((Math.random() - 0.5) * 50, -PLAY_H + Math.random() * 10, -6 + Math.random() * 8);
@@ -981,7 +1056,8 @@ function update(rdt) {
   night = lerp(night, BIOMES[run.biome % BIOMES.length].night, k);
   scene.fog.color.copy(pal.fog); mFar2.color.copy(pal.far2); mFar.color.copy(pal.far); mMid.color.copy(pal.mid);
   mTree.color.copy(pal.mid).multiplyScalar(0.82); mNear.color.copy(pal.near); mRock.color.copy(pal.dirt); mGround.color.copy(pal.ground);
-  mDirt.color.copy(pal.dirt); mTuft.color.copy(pal.ground).multiplyScalar(0.8); mFore.color.copy(pal.near).multiplyScalar(0.45);
+  mDirt.color.copy(pal.dirt); mTuft.color.copy(pal.ground).multiplyScalar(0.78); mTerrain.color.copy(pal.ground); mPath.color.copy(pal.dirt).lerp(pal.ground, 0.15).multiplyScalar(1.15);
+  mBush.color.copy(pal.near).multiplyScalar(1.1); mPine.color.copy(pal.near).multiplyScalar(0.75);
   sunMat.color.copy(pal.sun); for (const [m, o] of glowMats) { m.color.copy(pal.sun); m.opacity = o * (1 - night * 0.5); }
   starMat.opacity = night; ffMat.opacity = night * (0.6 + Math.sin(run.t * 3) * 0.3);
   hemi.intensity = 1.7 - night * 0.8; sun.intensity = 2.0 - night * 1.2; sunGroup.scale.setScalar(1 - night * 0.45);
@@ -1062,6 +1138,9 @@ function update(rdt) {
     p.m.scale.setScalar((0.6 + q * 1.6) * p.size); p.m.material.opacity = 0.8 * (1 - q);
   }
 
+  { const sx = player.position.x, gy = terrainH(sx - layers[layers.length - 1].tiles[0].position.x, 0), hgt = Math.max(0, player.position.y - gy);
+    playerShadow.visible = player.visible && state !== 'dead'; playerShadow.position.set(sx, gy + 0.03, 0);
+    playerShadow.scale.setScalar(clamp(1.2 - hgt * 0.06, 0.35, 1.2)); shadowMat.opacity = clamp(0.38 - hgt * 0.025, 0.06, 0.38); }
   shake = Math.max(0, shake - rdt * 1.8);
   camY = lerp(camY, state === 'play' ? run.py * 0.18 : 0, 1 - Math.exp(-rdt * 3));
   const fovKick = turbo ? 4 : 0; if (Math.abs(camera.fov - (50 + fovKick)) > 0.05) { camera.fov = lerp(camera.fov, 50 + fovKick, 0.1); camera.updateProjectionMatrix(); }
