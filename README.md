@@ -10,6 +10,15 @@ Cruise → Snack Zone (easy mode, free gas, enemies turn into gold beans) → Da
 - **Power-ups:** Shield (blocks one hit), Magnet, Turbo (chili: invincible and smashes enemies), Slow-mo, x2 points.
 - **Boss:** dodge the eggs and grab chilis to shoot fire toots at the King Pigeon.
 
+## Growth stages
+
+Beans, gold beans, purple Evo Gems, smashes and boss wins fill your evolve meter:
+Baby Toot → Toot Kid (feet) → Toot Teen (cape, bean pull) → Mega Toot (wings) → **FINAL FORM** (halo, aura, orbiting orbs, x2 points, survives one hit).
+
+## Skins
+
+8 skins in the Closet, each unlocked by playing (no purchases): Pinky, Lime Slime, Cool Dude, Robo Toot, Lava Butt, Ghosty, Royal Gas, Galaxy Brain.
+
 ## Play it in a browser
 
 ```

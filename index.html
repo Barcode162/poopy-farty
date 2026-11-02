@@ -160,7 +160,58 @@ canvas#c { position: fixed; inset: 0; width: 100%; height: 100%; display: block;
 .medal-name { font: 400 13px var(--font-display); }
 @keyframes spin { to { transform: rotateY(360deg); } }
 
+/* ---------- closet + skins ---------- */
+.closet { max-width: 430px; }
+.closet-head { display: flex; align-items: center; gap: 10px; }
+.closet-head .logo { font-size: 34px; flex: 1; margin: 0; }
+.key.back { font-size: 14px; padding: 8px 12px 10px; flex: none; }
+.closet-btn { display: flex; align-items: center; justify-content: center; gap: 12px; text-align: left; }
+.closet-btn img { width: 54px; height: 54px; flex: none; }
+.skins { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.skin { --r: #9aa5b1; position: relative; overflow: hidden; display: grid; justify-items: center; align-content: start; gap: 3px; padding: 8px 8px 10px; border-radius: 16px; border: 3px solid var(--ink);
+  cursor: pointer; font-family: var(--font-body); color: var(--ink); min-width: 0;
+  background: radial-gradient(circle at 50% 34%, #ffffff 0 28%, color-mix(in srgb, var(--r) 30%, #ffffff) 72%);
+  box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--r) 70%, #ffffff), inset 0 -5px 0 color-mix(in srgb, var(--r) 55%, #ffffff), 0 4px 0 var(--ink), 0 8px 10px rgba(20,8,30,0.2);
+  transform: perspective(500px) rotateX(5deg); transition: transform 0.12s; }
+.skin:active { transform: perspective(500px) rotateX(5deg) translateY(3px); }
+.skin.r-rare { --r: #3fa9f5; } .skin.r-epic { --r: #b07cff; } .skin.r-legendary { --r: #ffb320; }
+.skin img { width: 100%; max-width: 104px; aspect-ratio: 1; filter: drop-shadow(0 6px 4px rgba(43,24,56,0.3)); }
+.skin b { font: 400 14px var(--font-display); line-height: 1.1; text-align: center; }
+.skin em { font: 900 9px var(--font-body); letter-spacing: 0.14em; text-transform: uppercase; color: #fff; background: var(--r); border: 2px solid var(--ink); border-radius: 6px; padding: 1px 6px; }
+.skin.on { outline: 3px solid var(--pop); outline-offset: 2px; }
+.skin .eq { position: absolute; top: 6px; right: 6px; font: 400 10px var(--font-display); background: var(--pop); border: 2px solid var(--ink); border-radius: 6px; padding: 1px 5px; transform: rotate(6deg); box-shadow: 0 2px 0 var(--ink); }
+.skin.locked { cursor: not-allowed; }
+.skin.locked img { filter: brightness(0) opacity(0.22) drop-shadow(0 1px 0 #fff); }
+.skin small { font: 600 11px/1.25 var(--font-body); color: var(--muted); text-align: center; }
+.mini { width: 84%; height: 7px; border-radius: 4px; background: #2b183822; overflow: hidden; border: 1.5px solid var(--ink); }
+.mini i { display: block; height: 100%; background: var(--r); transform-origin: left; }
+.shine { position: absolute; inset: -40%; pointer-events: none; background: linear-gradient(115deg, transparent 42%, rgba(255,255,255,0.8) 50%, transparent 58%); transform: translateX(-60%); animation: sweep 3.4s ease-in-out infinite; }
+.r-common .shine, .r-rare .shine, .skin.locked .shine { display: none; }
+@keyframes sweep { 0%, 55% { transform: translateX(-60%); } 100% { transform: translateX(60%); } }
+.evo-strip { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; align-items: end; }
+.evo-strip div { display: grid; justify-items: center; gap: 2px; font: 700 9px/1.15 var(--font-body); color: var(--muted); text-align: center; }
+.evo-strip img { width: 100%; max-width: 66px; aspect-ratio: 1; }
+.evo-strip .no img { filter: brightness(0) opacity(0.22); }
+.unlock-skins { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.unlock-skins span { display: grid; justify-items: center; font: 400 11px var(--font-display); }
+.unlock-skins img { width: 64px; height: 64px; animation: bounceIn 0.6s cubic-bezier(.2,.9,.3,1.5); }
+@keyframes bounceIn { from { transform: scale(0) rotate(-30deg); } }
+
+/* ---------- evolution meter ---------- */
+.evo { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); width: min(330px, calc(100vw - 150px)); box-sizing: border-box;
+  transform: translateX(-50%) perspective(500px) rotateX(-12deg); transform-origin: bottom center; padding: 5px 10px 8px; display: grid; gap: 4px; pointer-events: none; }
+.evo-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.evo-top img { width: 26px; height: 26px; margin: -8px 0 -4px; }
+.evo-name { font: 400 13px var(--font-display); flex: 1; }
+.pips { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.pip { position: relative; height: 11px; border: 2px solid var(--ink); border-radius: 6px; background: #2b183822; overflow: hidden; }
+.pip i { position: absolute; inset: 0; transform-origin: left; background: linear-gradient(#d2b6ff, #8a4dd6); transform: scaleX(var(--p, 0)); }
+.pip.done i { background: linear-gradient(#ffe270, var(--pop)); }
+.evo.final .pip i { background: linear-gradient(90deg, #ff8fd1, #ffd23f, #8be06a, #5ec8ff, #b07cff); }
+.evo.pulse { animation: evoPulse 0.7s ease-out; }
+@keyframes evoPulse { 30% { transform: translateX(-50%) perspective(500px) rotateX(-12deg) scale(1.15); } }
 @media (prefers-reduced-motion: reduce) {
+  .shine, .unlock-skins img, .evo.pulse { animation: none; }
   .toast.show, .banner.show { animation-duration: 0.01s; }
   .medal, .panel { animation: none; }
 }
@@ -185,6 +236,7 @@ canvas#c { position: fixed; inset: 0; width: 100%; height: 100%; display: block;
   </div>
 </div>
 <div class="powers" id="powers"></div>
+<div class="plate evo" id="evo" hidden><div class="evo-top"><img id="evoImg" alt=""><span class="evo-name" id="evoName">Baby Toot</span><span class="eng">Evolve</span></div><div class="pips" id="pips"><span class="pip"><i></i></span><span class="pip"><i></i></span><span class="pip"><i></i></span><span class="pip"><i></i></span><span class="pip"><i></i></span></div></div>
 <div class="combo" id="combo"></div>
 <div class="toast" id="toast"></div>
 <div class="banner" id="banner"><small id="bannerSub">Phase 1</small><b id="bannerMain">CRUISE</b></div>
@@ -200,9 +252,20 @@ canvas#c { position: fixed; inset: 0; width: 100%; height: 100%; display: block;
       <span class="eng">Power-ups</span>
       <div class="legend" id="legend"></div>
     </div>
+    <button class="key alt closet-btn" id="openCloset"><img id="closetThumb" alt=""><span>Closet<small id="closetLine">Skins, trails and forms</small></span></button>
+    <p class="hint">Tap and hold anywhere, or hold Space. P pauses.</p>
+  </section>
+</div>
+
+<div class="panel-wrap" id="closet" hidden>
+  <section class="plate panel engraved closet">
+    <div class="closet-head"><button class="key alt back" id="closetBack">Back</button><h2 class="logo">CLOSET</h2></div>
+    <span class="eng">Skins · earn them by playing</span>
+    <div class="skins" id="skins"></div>
+    <span class="eng">Growth stages · <span id="evoSkinName">Pinky</span></span>
+    <div class="evo-strip" id="evoStrip"></div>
     <span class="eng">Toot trail</span>
     <div class="chips" id="trails"></div>
-    <p class="hint">Tap and hold anywhere, or hold Space. P pauses.</p>
   </section>
 </div>
 
@@ -633,23 +696,124 @@ const sphere = (r, w = 20, h = 14) => new THREE.SphereGeometry(r, w, h);
 
 const player = new THREE.Group(); scene.add(player);
 const hero = new THREE.Group(); player.add(hero);
-hero.add(part(sphere(0.62, 28, 20), toon('#ff8fb8')));
-const eyes = [];
-for (const [x, y, s] of [[0.18, 0.2, 0.2], [0.42, 0.14, 0.16]]) {
-  const e = new THREE.Group(); e.position.set(x, y, 0.5);
-  e.add(new THREE.Mesh(sphere(s, 16, 12), eyeW));
-  const p = new THREE.Mesh(sphere(s * 0.45, 12, 10), eyeB); p.position.set(0.05, -0.02, s * 0.8); e.add(p);
-  hero.add(e); eyes.push(e);
-}
-const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.035, 8, 16, Math.PI), eyeB); mouth.position.set(0.36, -0.12, 0.55); mouth.rotation.z = Math.PI; hero.add(mouth);
-for (const z of [-0.25, 0.25]) hero.add(part(sphere(0.32, 16, 12), toon('#ff6d9f'), [-0.45, -0.25, z]));
-const blush = toon('#ff5c8a');
-for (const x of [0.05, 0.5]) { const b = new THREE.Mesh(sphere(0.07, 8, 6), blush); b.position.set(x, -0.05, 0.56); b.scale.set(1.4, 0.7, 0.5); hero.add(b); }
 // shield bubble + turbo flames on the player
 const shieldMesh = new THREE.Mesh(sphere(1.05, 28, 20), new THREE.MeshToonMaterial({ color: '#5ec8ff', gradientMap: grad, transparent: true, opacity: 0.35, depthWrite: false }));
 shieldMesh.visible = false; player.add(shieldMesh);
 const magnetRing = new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.04, 6, 40), new THREE.MeshBasicMaterial({ color: '#ff5a5a', transparent: true, opacity: 0.6 }));
 magnetRing.visible = false; player.add(magnetRing);
+// ---------- skins + growth stages ----------
+const SKINS = [
+  { id: 'pinky', name: 'Pinky', rarity: 'common', body: '#ff8fb8', cheek: '#ff6d9f', accent: '#ff4d5e' },
+  { id: 'lime', name: 'Lime Slime', rarity: 'common', body: '#a6e85a', cheek: '#6cbf3a', accent: '#2f8f4a', need: { type: 'beans', n: 150 } },
+  { id: 'cool', name: 'Cool Dude', rarity: 'rare', body: '#5ec8ff', cheek: '#3a9fe0', accent: '#2b3a8f', extra: 'shades', need: { type: 'best', n: 1000 } },
+  { id: 'robo', name: 'Robo Toot', rarity: 'rare', body: '#c3ccd6', cheek: '#8693a3', accent: '#5ec8ff', metal: true, extra: 'antenna', need: { type: 'bosses', n: 1 } },
+  { id: 'lava', name: 'Lava Butt', rarity: 'epic', body: '#ff6a2b', cheek: '#c93a12', accent: '#ffd23f', glow: '#ff3300', extra: 'flames', need: { type: 'stage', n: 4 } },
+  { id: 'ghost', name: 'Ghosty', rarity: 'epic', body: '#eef6ff', cheek: '#c4d6f2', accent: '#9fd8ff', ghost: true, need: { type: 'beans', n: 1000 } },
+  { id: 'royal', name: 'Royal Gas', rarity: 'legendary', body: '#ffd23f', cheek: '#e0a400', accent: '#8a2be2', metal: true, extra: 'crown', need: { type: 'bosses', n: 5 } },
+  { id: 'galaxy', name: 'Galaxy Brain', rarity: 'legendary', body: '#3b2180', cheek: '#6a3fd0', accent: '#5ec8ff', glow: '#4a1fb0', galaxy: true, need: { type: 'best', n: 6000 } },
+];
+const STAGES = [
+  { name: 'Baby Toot', xp: 0, scale: 0.74, gas: 1, mult: 1, pull: 0, perk: 'Tiny and wobbly' },
+  { name: 'Toot Kid', xp: 18, scale: 0.88, gas: 0.85, mult: 1, pull: 0, perk: 'Gas lasts longer' },
+  { name: 'Toot Teen', xp: 50, scale: 1.0, gas: 0.78, mult: 1.25, pull: 1.6, perk: 'Cape · x1.25 · bean pull' },
+  { name: 'Mega Toot', xp: 100, scale: 1.14, gas: 0.68, mult: 1.5, pull: 2.4, perk: 'Wings · x1.5' },
+  { name: 'FINAL FORM', xp: 170, scale: 1.3, gas: 0.5, mult: 2, pull: 3.2, perk: 'x2 · survives one hit' },
+];
+let life = Object.assign({ beans: 0, bosses: 0, maxStage: 0, runs: 0 }, store.get('life', {}));
+let skinId = store.get('skin', 'pinky');
+function skinValue(n) { return n.type === 'beans' ? life.beans : n.type === 'best' ? best : n.type === 'bosses' ? life.bosses : life.maxStage; }
+const skinProgress = (s) => (s.need ? Math.min(1, skinValue(s.need) / s.need.n) : 1);
+const skinOpen = (s) => skinProgress(s) >= 1;
+function needLabel(n) {
+  if (n.type === 'beans') return `Eat ${n.n} beans (all runs)`;
+  if (n.type === 'best') return `Score ${n.n} in one run`;
+  if (n.type === 'bosses') return n.n === 1 ? 'Beat the King Pigeon' : `Beat ${n.n} bosses (all runs)`;
+  return 'Reach Final Form';
+}
+if (!skinOpen(SKINS.find((s) => s.id === skinId) || SKINS[0])) skinId = 'pinky';
+
+const capeGeo = new THREE.PlaneGeometry(0.85, 1.05, 1, 6); capeGeo.translate(0, -0.5, 0);
+function buildHero(id, stage) {
+  const s = SKINS.find((k) => k.id === id) || SKINS[0];
+  const trans = s.ghost ? { transparent: true, opacity: 0.74 } : {};
+  const glow = s.glow ? { emissive: new THREE.Color(s.glow), emissiveIntensity: 0.45 } : {};
+  const mBody = toon(s.body, { ...trans, ...glow }), mCheek = toon(s.cheek, { ...trans, ...glow }), mAcc = toon(s.accent);
+  const g = new THREE.Group(), ud = (g.userData = { eyes: [], feet: [], wings: [], orbs: [], flames: [] });
+  g.add(part(sphere(0.62, 28, 20), mBody));
+  if (s.metal) {
+    const hl = new THREE.Mesh(sphere(0.12, 10, 8), new THREE.MeshBasicMaterial({ color: '#ffffff' })); hl.position.set(-0.08, 0.4, 0.42); hl.scale.set(1.7, 0.7, 0.5); g.add(hl);
+    if (s.id === 'robo') { const seam = new THREE.Mesh(new THREE.TorusGeometry(0.625, 0.018, 6, 48), eyeB); seam.rotation.y = Math.PI / 2; g.add(seam); for (const y of [0.2, -0.2]) { const bolt = new THREE.Mesh(sphere(0.04, 6, 4), eyeB); bolt.position.set(-0.3, y, 0.52); g.add(bolt); } }
+  }
+  if (s.galaxy) for (let i = 0; i < 26; i++) {
+    const v = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random()).normalize().multiplyScalar(0.628);
+    const st = new THREE.Mesh(sphere(0.018 + Math.random() * 0.022, 6, 4), new THREE.MeshBasicMaterial({ color: Math.random() < 0.3 ? '#ffd23f' : '#ffffff' })); st.position.copy(v); g.add(st);
+  }
+  if (s.ghost) for (let i = 0; i < 4; i++) { const t = part(new THREE.ConeGeometry(0.13, 0.3, 8), mBody, [-0.33 + i * 0.22, -0.6, 0], 1.08); t.rotation.z = Math.PI; g.add(t); }
+  const pupilMat = s.id === 'robo' ? new THREE.MeshBasicMaterial({ color: '#5ec8ff' }) : eyeB;
+  for (const [x, y, sz] of [[0.18, 0.2, 0.2], [0.42, 0.14, 0.16]]) {
+    const e = new THREE.Group(); e.position.set(x, y, 0.5);
+    e.add(new THREE.Mesh(sphere(sz, 16, 12), eyeW));
+    const p = new THREE.Mesh(sphere(sz * 0.45, 12, 10), pupilMat); p.position.set(0.05, -0.02, sz * 0.8); e.add(p);
+    const gl = new THREE.Mesh(sphere(sz * 0.15, 6, 4), new THREE.MeshBasicMaterial({ color: '#ffffff' })); gl.position.set(0.02, 0.05, sz * 1.15); e.add(gl);
+    g.add(e); ud.eyes.push(e);
+  }
+  const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.035, 8, 16, Math.PI), eyeB); mouth.position.set(0.36, -0.12, 0.55); mouth.rotation.z = Math.PI; g.add(mouth);
+  for (const z of [-0.25, 0.25]) g.add(part(sphere(0.32, 16, 12), mCheek, [-0.45, -0.25, z]));
+  for (const x of [0.05, 0.5]) { const b = new THREE.Mesh(sphere(0.07, 8, 6), toon(s.cheek)); b.position.set(x, -0.05, 0.56); b.scale.set(1.4, 0.7, 0.5); g.add(b); }
+  // skin extras
+  if (s.extra === 'shades') {
+    const lens = toon('#1b1024');
+    for (const [x, w] of [[0.18, 0.36], [0.45, 0.3]]) { const l = part(new THREE.BoxGeometry(w, 0.2, 0.1), lens, [x, 0.2, 0.62], 1.06); g.add(l); }
+    const br = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.04, 0.05), lens); br.position.set(0.33, 0.24, 0.64); g.add(br);
+    const sh = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.03, 0.02), new THREE.MeshBasicMaterial({ color: '#ffffff' })); sh.position.set(0.12, 0.25, 0.68); sh.rotation.z = 0.5; g.add(sh);
+  }
+  if (s.extra === 'antenna') { g.add(part(new THREE.CylinderGeometry(0.025, 0.025, 0.4, 6), eyeB, [0.05, 0.78, 0], 0)); const tip = new THREE.Mesh(sphere(0.08, 10, 8), new THREE.MeshBasicMaterial({ color: '#ff4d5e' })); tip.position.set(0.05, 1.0, 0); g.add(tip); ud.blinker = tip; }
+  if (s.extra === 'crown') { const c = makeCrown(); c.position.set(0.05, 0.62, 0); c.scale.setScalar(1.4); c.rotation.z = -0.15; g.add(c); }
+  if (s.extra === 'flames') for (let i = 0; i < 3; i++) { const f = new THREE.Mesh(new THREE.ConeGeometry(0.11 - i * 0.02, 0.45 - i * 0.08, 8), new THREE.MeshBasicMaterial({ color: ['#ff8a1f', '#ffd23f', '#ff4d1f'][i] })); f.position.set(-0.1 + i * 0.16, 0.7 - i * 0.04, 0); f.geometry.translate(0, 0.2, 0); g.add(f); ud.flames.push(f); }
+  // growth stage gear
+  if (stage >= 1) for (const z of [0.22, -0.22]) { const f = part(sphere(0.14, 12, 8), mAcc, [0.1, -0.6, z], 1.1); f.scale.set(1.5, 0.7, 1); g.add(f); ud.feet.push(f); }
+  if (stage >= 2) { const cape = new THREE.Mesh(capeGeo, toon(s.accent, { side: THREE.DoubleSide })); cape.position.set(-0.3, 0.42, -0.35); g.add(cape); ud.cape = cape; }
+  if (stage >= 3) {
+    const wm = toon(stage >= 4 ? '#fff6d8' : '#ffffff');
+    for (const side of [1, -1]) {
+      const w = new THREE.Group(); w.position.set(-0.3, 0.35, side * 0.3);
+      for (let f = 0; f < 3; f++) { const fe = part(sphere(0.3, 12, 8), wm, [-0.12 - f * 0.13, 0.28 + f * 0.1, 0], 1.08); fe.scale.set(0.32, 1.25 - f * 0.28, 0.12); fe.rotation.z = 0.55 + f * 0.38; w.add(fe); }
+      g.add(w); ud.wings.push(w);
+    }
+  }
+  if (stage >= 4) {
+    const halo = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.05, 8, 32), new THREE.MeshBasicMaterial({ color: '#ffe26b' })); halo.rotation.x = Math.PI / 2 - 0.3; halo.position.set(0.05, 1.0, 0); g.add(halo); ud.halo = halo;
+    const aura = new THREE.Mesh(sphere(1.0, 24, 16), new THREE.MeshBasicMaterial({ color: s.glow || s.accent, transparent: true, opacity: 0.18, depthWrite: false, blending: THREE.AdditiveBlending })); g.add(aura); ud.aura = aura;
+    for (let i = 0; i < 3; i++) { const o = new THREE.Mesh(sphere(0.09, 10, 8), new THREE.MeshBasicMaterial({ color: ['#ffd23f', '#5ec8ff', '#ff8fd1'][i] })); g.add(o); ud.orbs.push(o); }
+  }
+  return g;
+}
+let eyes = [], heroBody = null, heroStage = 0, heroPop = 0;
+function setHero(id, stage) {
+  if (heroBody) hero.remove(heroBody);
+  heroBody = buildHero(id, stage); hero.add(heroBody); heroStage = stage; eyes = heroBody.userData.eyes;
+  heroBody.scale.setScalar(STAGES[stage].scale);
+}
+// 3D thumbnails for the closet (rendered once, cached)
+let thumbR = null, thumbScene = null, thumbCam = null; const thumbCache = {};
+function thumb(id, stage, size = 160) {
+  const key = id + stage + size; if (thumbCache[key]) return thumbCache[key];
+  try {
+    if (!thumbR) {
+      thumbR = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true }); thumbR.setPixelRatio(1);
+      thumbR.toneMapping = THREE.ACESFilmicToneMapping; thumbScene = new THREE.Scene();
+      thumbScene.add(new THREE.HemisphereLight('#ffffff', '#8a6a9a', 1.9)); const d = new THREE.DirectionalLight('#fff4d6', 2.2); d.position.set(3, 4, 5); thumbScene.add(d);
+      thumbCam = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
+    }
+    thumbR.setSize(size, size, false);
+    const h = buildHero(id, stage); h.rotation.y = -0.4; h.scale.setScalar(stage >= 3 ? 0.85 : 1);
+    if (h.userData.cape) h.userData.cape.rotation.z = -0.8; for (const w of h.userData.wings) w.rotation.z = 0.25;
+    h.userData.orbs.forEach((o, i) => { const a = i * 2.09 + 0.5; o.position.set(Math.cos(a) * 1.0, 0.1, Math.sin(a) * 1.0); });
+    thumbScene.add(h); thumbCam.position.set(0.15, 0.3, stage >= 3 ? 4.6 : 4.0); thumbCam.lookAt(0, stage >= 3 ? 0.2 : 0, 0);
+    thumbR.render(thumbScene, thumbCam); const url = thumbR.domElement.toDataURL('image/png'); thumbScene.remove(h);
+    return (thumbCache[key] = url);
+  } catch { return ''; }
+}
 
 // Blender models: put .glb files in /models with these names and they replace the placeholders.
 const models = {};
@@ -678,10 +842,7 @@ function makePigeon(boss = false) {
   const wing = part(new THREE.BoxGeometry(0.62, 0.1, 0.72), boss ? toon('#5e4f8a') : greyDark, [0.05, 0.3, 0.2]); wing.name = 'wing'; g.add(wing);
   const tail = part(new THREE.ConeGeometry(0.22, 0.5, 4), greyDark, [0.75, 0.1, 0]); tail.rotation.z = -Math.PI / 2; g.add(tail);
   if (boss) {
-    const crown = new THREE.Group(); crown.position.set(-0.6, 0.62, 0);
-    crown.add(part(new THREE.CylinderGeometry(0.24, 0.22, 0.14, 12), crownMat));
-    for (let i = 0; i < 5; i++) { const sp = part(new THREE.ConeGeometry(0.06, 0.22, 5), crownMat, [Math.cos(i * 1.256) * 0.2, 0.17, Math.sin(i * 1.256) * 0.2], 1.15); crown.add(sp); }
-    const gem = new THREE.Mesh(new THREE.OctahedronGeometry(0.06), toon('#ff4d5e')); gem.position.set(0, 0.03, 0.24); crown.add(gem);
+    const crown = makeCrown(); crown.position.set(-0.6, 0.62, 0);
     g.add(crown);
   }
   return g;
@@ -772,6 +933,147 @@ function spawnPuff(x, y, vx, vy, size = 1, color) {
   else p.m.material.color.set(tr.color);
   p.m.visible = true;
 }
+// ============ sparkle particles (GPU points, additive glow) ============
+const SPARK_N = 1400;
+const sparkGeo = new THREE.BufferGeometry();
+const sPos = new Float32Array(SPARK_N * 3), sCol = new Float32Array(SPARK_N * 3), sSize = new Float32Array(SPARK_N), sAlpha = new Float32Array(SPARK_N);
+sparkGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+sparkGeo.setAttribute('scol', new THREE.BufferAttribute(sCol, 3));
+sparkGeo.setAttribute('size', new THREE.BufferAttribute(sSize, 1));
+sparkGeo.setAttribute('alpha', new THREE.BufferAttribute(sAlpha, 1));
+const sparkMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  uniforms: { scale: { value: 600 } },
+  vertexShader: 'attribute float size; attribute float alpha; attribute vec3 scol; varying vec3 vC; varying float vA; uniform float scale;\nvoid main(){ vC = scol; vA = alpha; vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_PointSize = size * scale / -mv.z; gl_Position = projectionMatrix * mv; }',
+  fragmentShader: 'varying vec3 vC; varying float vA;\nvoid main(){ vec2 p = gl_PointCoord - 0.5; float d = length(p); float core = smoothstep(0.5, 0.0, d);\n float star = max(0.0, 1.0 - abs(p.x) * 10.0) * smoothstep(0.5, 0.0, abs(p.y)) + max(0.0, 1.0 - abs(p.y) * 10.0) * smoothstep(0.5, 0.0, abs(p.x));\n float a = (core * core * 0.9 + star * 0.7) * vA; if (a < 0.01) discard; gl_FragColor = vec4(vC * (0.6 + core), a);\n#include <colorspace_fragment>\n}',
+});
+const sparks = new THREE.Points(sparkGeo, sparkMat); sparks.frustumCulled = false; scene.add(sparks);
+const sv = Array.from({ length: SPARK_N }, () => ({ vx: 0, vy: 0, vz: 0, life: 0, max: 1, size: 0.3, grav: 0, drag: 0.97, tw: 0 }));
+let sparkIdx = 0; const _c = new THREE.Color();
+function spark(x, y, z, vx, vy, vz, color, size = 0.3, life = 0.7, grav = 0, drag = 0.96, tw = 0) {
+  const i = (sparkIdx = (sparkIdx + 1) % SPARK_N), p = sv[i];
+  sPos[i * 3] = x; sPos[i * 3 + 1] = y; sPos[i * 3 + 2] = z;
+  _c.set(color); sCol[i * 3] = _c.r; sCol[i * 3 + 1] = _c.g; sCol[i * 3 + 2] = _c.b;
+  Object.assign(p, { vx, vy, vz, life, max: life, size, grav, drag, tw });
+}
+function sparkBurst(x, y, n, colors, speed = 6, size = 0.3, life = 0.7, grav = 0) {
+  for (let k = 0; k < n; k++) {
+    const a = Math.random() * Math.PI * 2, s = speed * (0.3 + Math.random() * 0.7);
+    spark(x, y, (Math.random() - 0.5) * 1.5, Math.cos(a) * s, Math.sin(a) * s, (Math.random() - 0.5) * s * 0.5, colors[k % colors.length], size * (0.6 + Math.random() * 0.8), life * (0.6 + Math.random() * 0.6), grav);
+  }
+}
+const CONFETTI = ['#ff4d5e', '#ffd23f', '#8be06a', '#5ec8ff', '#b07cff', '#ff8fd1'];
+function confetti(x, y, n = 80) { for (let k = 0; k < n; k++) spark(x + (Math.random() - 0.5) * 2, y, (Math.random() - 0.5) * 3, (Math.random() - 0.5) * 14, 6 + Math.random() * 12, 0, CONFETTI[k % 6], 0.28 + Math.random() * 0.2, 1.6 + Math.random(), -16, 0.985, 1); }
+function updateSparks(dt) {
+  for (let i = 0; i < SPARK_N; i++) {
+    const p = sv[i]; if (p.life <= 0) { sAlpha[i] = 0; continue; }
+    p.life -= dt; const q = Math.max(0, p.life / p.max);
+    p.vy += p.grav * dt; p.vx *= p.drag; p.vy *= p.drag; p.vz *= p.drag;
+    sPos[i * 3] += p.vx * dt; sPos[i * 3 + 1] += p.vy * dt; sPos[i * 3 + 2] += p.vz * dt;
+    sAlpha[i] = Math.min(1, q * 1.6) * (p.tw ? 0.55 + 0.45 * Math.sin(p.life * 30 + i) : 1);
+    sSize[i] = p.size * (0.4 + q * 0.6);
+  }
+  sparkGeo.attributes.position.needsUpdate = sparkGeo.attributes.size.needsUpdate = sparkGeo.attributes.alpha.needsUpdate = sparkGeo.attributes.scol.needsUpdate = true;
+  sparkMat.uniforms.scale.value = renderer.domElement.height / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
+}
+// shockwave rings
+const rings = Array.from({ length: 10 }, () => {
+  const m = new THREE.Mesh(new THREE.RingGeometry(0.85, 1, 64), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }));
+  m.visible = false; scene.add(m); return { m, life: 0, max: 1, to: 3 };
+});
+let ringIdx = 0;
+function ring(x, y, color, to = 3, life = 0.5, delay = 0) {
+  const r = rings[(ringIdx = (ringIdx + 1) % rings.length)];
+  r.m.position.set(x, y, 0.5); r.m.material.color.set(color); r.life = r.max = life; r.to = to; r.delay = delay; r.m.visible = true; r.m.scale.setScalar(0.01);
+}
+function updateRings(dt) {
+  for (const r of rings) {
+    if (!r.m.visible) continue;
+    if (r.delay > 0) { r.delay -= dt; r.m.material.opacity = 0; continue; }
+    r.life -= dt; if (r.life <= 0) { r.m.visible = false; continue; }
+    const q = 1 - r.life / r.max; r.m.scale.setScalar(0.2 + r.to * (1 - Math.pow(1 - q, 3))); r.m.material.opacity = 0.9 * (1 - q);
+  }
+}
+// ambient motes per world: pollen, embers, (fireflies at night), candy glitter
+function ambient(dt, scroll) {
+  const b = run.biome % BIOMES.length, rate = [6, 9, 0, 12][b];
+  if (Math.random() < rate * dt) {
+    const col = [['#fff6c0', '#ffffff'], ['#ffb26b', '#ffd23f'], ['#ffffff'], ['#ff8fd1', '#ffffff', '#9ff0ff']][b];
+    spark(-halfW + Math.random() * (halfW * 2 + 6), -PLAY_H + Math.random() * PLAY_H * 2, -6 + Math.random() * 8, -scroll * 0.25 - 0.4, (b === 1 ? 0.8 : 0.2) + Math.random() * 0.3, 0,
+      col[Math.floor(Math.random() * col.length)], 0.14 + Math.random() * 0.14, 3 + Math.random() * 2, 0, 1, 1);
+  }
+}
+function makeCrown() {
+  const crown = new THREE.Group();
+  crown.add(part(new THREE.CylinderGeometry(0.24, 0.22, 0.14, 12), crownMat));
+  for (let i = 0; i < 5; i++) crown.add(part(new THREE.ConeGeometry(0.06, 0.22, 5), crownMat, [Math.cos(i * 1.256) * 0.2, 0.17, Math.sin(i * 1.256) * 0.2], 1.15));
+  const gem = new THREE.Mesh(new THREE.OctahedronGeometry(0.06), toon('#ff4d5e')); gem.position.set(0, 0.03, 0.24); crown.add(gem);
+  return crown;
+}
+const gemMat = toon('#b07cff', { emissive: '#5a1fb0', emissiveIntensity: 0.5 });
+function makeGem() {
+  const g = new THREE.Group(); const o = part(new THREE.OctahedronGeometry(0.4, 0), gemMat, [0, 0, 0], 1.1); o.scale.set(0.8, 1.15, 0.8); g.add(o);
+  const shine = new THREE.Mesh(new THREE.OctahedronGeometry(0.12, 0), new THREE.MeshBasicMaterial({ color: '#ffffff' })); shine.position.set(-0.1, 0.18, 0.25); g.add(shine);
+  return g;
+}
+
+// ============ evolution ============
+const sndEvolve = () => { [262, 330, 392, 523, 659, 784, 1046].forEach((f, i) => tone('triangle', f, 0, 0.22, 0.16, i * 0.05)); noise(0.8, 2000, 9000, 0.15, 'highpass', 0.1); };
+function gainXp(n) {
+  if (state !== 'play') return;
+  run.xp += n; const next = STAGES[run.stage + 1];
+  if (next && run.xp >= next.xp) evolve(run.stage + 1);
+}
+function evolve(st) {
+  run.stage = st; run.peak = Math.max(run.peak, st); life.maxStage = Math.max(life.maxStage, st); store.set('life', life);
+  setHero(skinId, st); heroPop = 0.7; run.slow = 0.55; shake = 0.5; flash(); sndEvolve();
+  const s = SKINS.find((k) => k.id === skinId);
+  ring(run.px, run.py, '#ffffff', 4, 0.6); ring(run.px, run.py, s.accent, 6, 0.8, 0.12); ring(run.px, run.py, '#ffd23f', 8, 1, 0.25);
+  sparkBurst(run.px, run.py, 140, ['#ffffff', s.body, s.accent, '#ffd23f'], 12, 0.45, 1.1);
+  banner(STAGES[st].name, st === 4 ? 'Ultimate evolution!' : 'Evolved!');
+  setTimeout(() => toast(STAGES[st].perk.toUpperCase()), 1200);
+  const ev = $('evo'); ev.classList.remove('pulse'); void ev.offsetWidth; ev.classList.add('pulse');
+}
+function renderEvo() {
+  const st = run.stage, cur = STAGES[st], next = STAGES[st + 1];
+  $('evoName').textContent = cur.name; $('evo').classList.toggle('final', st === 4);
+  const ek = skinId + st; if ($('evoImg').dataset.k !== ek) { $('evoImg').dataset.k = ek; $('evoImg').src = thumb(skinId, st, 64); }
+  const pips = $('pips').children;
+  for (let i = 0; i < 5; i++) {
+    let p = 0;
+    if (i < st) p = 1; else if (i === st) p = next ? clamp((run.xp - cur.xp) / (next.xp - cur.xp), 0, 1) : 1;
+    pips[i].style.setProperty('--p', p.toFixed(3)); pips[i].classList.toggle('done', i < st || (i === 4 && st === 4));
+  }
+}
+
+// ============ closet ============
+function renderTrails() {
+  const wrap = $('trails'); wrap.innerHTML = '';
+  for (const tr of TRAILS) {
+    const b = document.createElement('button'); b.className = 'chip'; b.id = 'trail-' + tr.id;
+    const open = best >= tr.need; b.disabled = !open; b.setAttribute('aria-pressed', String(tr.id === trailId));
+    const dot = document.createElement('span'); dot.className = 'dot';
+    dot.style.background = tr.color === 'rainbow' ? 'conic-gradient(red, orange, yellow, lime, cyan, blue, magenta, red)' : tr.color;
+    b.append(dot, open ? tr.name : `${tr.name} · ${tr.need}`);
+    b.onclick = () => { trailId = tr.id; store.set('trail', trailId); renderTrails(); };
+    wrap.append(b);
+  }
+}
+function renderCloset() {
+  const wrap = $('skins'); wrap.innerHTML = '';
+  for (const s of SKINS) {
+    const open = skinOpen(s), b = document.createElement('button');
+    b.className = `skin r-${s.rarity}${open ? '' : ' locked'}${s.id === skinId ? ' on' : ''}`; b.id = 'skin-' + s.id; b.disabled = !open;
+    b.innerHTML = `<span class="shine"></span><img alt="" src="${thumb(s.id, open ? 2 : 0)}"><b>${s.name}</b><em>${s.rarity}</em>` +
+      (open ? (s.id === skinId ? '<span class="eq">ON</span>' : '') : `<small>${needLabel(s.need)}</small><span class="mini"><i style="transform:scaleX(${skinProgress(s).toFixed(3)})"></i></span>`);
+    b.onclick = () => { if (!open) return; skinId = s.id; store.set('skin', skinId); setHero(skinId, menuStage()); renderCloset(); sndPower(); };
+    wrap.append(b);
+  }
+  const s = SKINS.find((k) => k.id === skinId); $('evoSkinName').textContent = s.name;
+  $('evoStrip').innerHTML = STAGES.map((st, i) => `<div class="${i <= life.maxStage ? '' : 'no'}"><img alt="" src="${thumb(skinId, i, 96)}">${i <= life.maxStage ? st.name : '???'}</div>`).join('');
+  renderTrails();
+}
+const menuStage = () => Math.min(life.maxStage, 2);
 function burst(x, y, n, color, speed = 6, size = 1) { for (let i = 0; i < n; i++) { const a = Math.random() * 6.28, s = speed * (0.4 + Math.random() * 0.6); spawnPuff(x, y, Math.cos(a) * s, Math.sin(a) * s, size, color); } }
 
 // ============ run state ============
@@ -787,14 +1089,14 @@ let run = freshRun();
 function freshRun() {
   return { phaseIdx: 0, phase: PHASES[0], phaseD: 0, phaseT: 0, phaseNum: 0, loop: 0, biome: 0,
     px: 0, py: 0, vy: 0, gas: 100, dist: 0, pts: 0, beans: 0, combo: 0, topCombo: 1, lastBean: -9, speed: 7, t: 0,
-    spawnIn: 3, shield: false, invuln: 0, timers: { magnet: 0, chili: 0, zen: 0, double: 0 }, bosses: 0, chiliCd: 0, started: false };
+    spawnIn: 3, shield: false, invuln: 0, timers: { magnet: 0, chili: 0, zen: 0, double: 0 }, bosses: 0, chiliCd: 0, started: false, stage: 0, xp: 0, peak: 0, slow: 0, unlockedAtStart: [] };
 }
 let holding = false, shake = 0, tootTimer = 0, deadTimer = 0, menuBiomeT = 0;
 const things = [];
 let boss = null;
 
 const HAZARD = new Set(['pigeon', 'spikeball', 'bee', 'gull', 'egg', 'spinner']);
-const RADIUS = { bean: 0.45, gold: 0.55, power: 0.65, pigeon: 0.6, spikeball: 0.62, bee: 0.5, gull: 0.55, egg: 0.28, fire: 0.45, spinner: 0.55 };
+const RADIUS = { bean: 0.45, gold: 0.55, power: 0.65, pigeon: 0.6, spikeball: 0.62, bee: 0.5, gull: 0.55, egg: 0.28, fire: 0.45, spinner: 0.55, gem: 0.5 };
 function add(type, x, y, opts = {}) {
   let mesh;
   if (type === 'bean' || type === 'gold') mesh = makeBean(type === 'gold');
@@ -804,6 +1106,7 @@ function add(type, x, y, opts = {}) {
   else if (type === 'gull') mesh = makeGull();
   else if (type === 'egg') mesh = makeEgg();
   else if (type === 'fire') mesh = makeFire();
+  else if (type === 'gem') mesh = makeGem();
   else if (type === 'power') mesh = makePower(opts.kind);
   else if (type === 'spinner') {
     mesh = new THREE.Group(); mesh.add(part(sphere(0.35), toon('#5a3a4a')));
@@ -856,6 +1159,7 @@ function spawnPattern() {
     add('spinner', x0 + 3, (rng() - 0.5) * 6, { spin: (rng() < 0.5 ? -1 : 1) * (1.3 + L * 0.6) });
     run.spawnIn = (11 - L * 2) * gapMul;
   }
+  if (rng() < 0.3) add('gem', x0 + run.spawnIn * 0.35, (rng() - 0.5) * 9);
   maybePower(x0 + run.spawnIn * 0.6);
 }
 
@@ -913,7 +1217,7 @@ function updateBoss(dt) {
     if (Math.random() < 0.5) burst(b.x + (Math.random() - 0.5) * 2, b.y + (Math.random() - 0.5) * 2, 2, '#ffffff', 5, 0.8);
     if (b.dying <= 0) {
       burst(b.x, b.y, 40, '#c06bff', 10, 1.4); burst(b.x, b.y, 20, '#ffd23f', 8, 1); sndSplat(); flash();
-      const bonus = 500 * (run.loop + 1); run.pts += bonus; run.bosses++; toast(`BOSS DOWN +${bonus}`);
+      const bonus = 500 * (run.loop + 1); run.pts += bonus; run.bosses++; toast(`BOSS DOWN +${bonus}`); gainXp(40); confetti(b.x, b.y, 140); ring(b.x, b.y, '#ffd23f', 9, 0.9); ring(b.x, b.y, '#ffffff', 6, 0.6, 0.1);
       for (let i = 0; i < 12; i++) add('gold', b.x + i * 0.9, Math.sin(i) * 4);
       scene.remove(b.mesh); boss = null; enterPhase(run.phaseIdx + 1);
     }
@@ -946,14 +1250,15 @@ function startRun(isDaily) {
   ensureAudio();
   daily = isDaily; rng = isDaily ? mulberry32(daySeed) : Math.random;
   clearThings(); run = freshRun(); holding = false; shake = 0;
+  setHero(skinId, 0); run.unlockedAtStart = SKINS.filter(skinOpen).map((k) => k.id);
   player.visible = true; state = 'play';
-  for (const id of ['menu', 'over', 'pauseMenu']) $(id).hidden = true;
-  $('hud').hidden = false; $('combo').textContent = '';
+  for (const id of ['menu', 'over', 'pauseMenu', 'closet']) $(id).hidden = true;
+  $('hud').hidden = false; $('evo').hidden = false; renderEvo(); $('combo').textContent = '';
   enterPhase(0); banner(isDaily ? 'DAILY RUN' : 'CRUISE', isDaily ? dayKey : 'Phase 1');
 }
 const score = () => Math.floor(run.pts);
 const unlockedBy = (s) => TRAILS.filter((tr) => tr.need <= s);
-function smash(e, idx) { burst(e.x, e.y, 10, '#ffffff', 7, 0.8); run.pts += 30 * pmult(); toast('SMASH +30'); sndHit(); removeAt(idx); }
+function smash(e, idx) { burst(e.x, e.y, 10, '#ffffff', 7, 0.8); sparkBurst(e.x, e.y, 24, ['#ffffff', '#ffd23f'], 9, 0.35, 0.5); gainXp(2); run.pts += 30 * pmult(); toast('SMASH +30'); sndHit(); removeAt(idx); }
 function hurt(how, idx) {
   if (state !== 'play') return;
   if (run.timers.chili > 0) { if (idx != null) smash(things[idx], idx); return; }
@@ -963,11 +1268,18 @@ function hurt(how, idx) {
     if (idx != null) removeAt(idx);
     return;
   }
+  if (run.stage === 4) { // final form takes the hit and drops back to Mega
+    run.stage = 3; run.xp = STAGES[3].xp; setHero(skinId, 3); run.invuln = 1.6; heroPop = 0.4; sndPop(); shake = 0.6; toast('FINAL FORM BROKE!');
+    sparkBurst(run.px, run.py, 60, ['#ffffff', '#ffd23f', '#ff8fd1'], 10, 0.4, 0.8); ring(run.px, run.py, '#ffffff', 5, 0.5);
+    if (idx != null) removeAt(idx);
+    return;
+  }
   die(how);
 }
 function die(how) {
   state = 'dead'; deadTimer = 1.0; holding = false; shake = 0.9; sndSplat(); flash();
-  burst(run.px, run.py, 28, '#c9532f', 8, 1.6); player.visible = false;
+  burst(run.px, run.py, 28, '#c9532f', 8, 1.6); sparkBurst(run.px, run.py, 50, ['#ffd23f', '#ffffff', '#ff8a6a'], 10, 0.4, 0.8); player.visible = false; $('evo').hidden = true;
+  life.beans += run.beans; life.bosses += run.bosses; life.runs++; store.set('life', life);
   const s = score(), before = unlockedBy(best).length;
   const isBest = s > best; if (isBest) { best = s; store.set('best', best); }
   const isDailyBest = daily && s > dailyBest; if (isDailyBest) { dailyBest = s; store.set('daily_' + dayKey, dailyBest); }
@@ -978,25 +1290,21 @@ function die(how) {
   $('finalScore').textContent = s;
   $('stBeans').textContent = run.beans; $('stCombo').textContent = 'x' + run.topCombo; $('stBest').textContent = daily ? dailyBest : best;
   $('stPhase').textContent = run.phaseNum; $('stBoss').textContent = run.bosses; $('stWorld').textContent = run.loop + 1;
-  $('medal').style.setProperty('--m', medal.m); $('medal').style.setProperty('--md', medal.md); $('medalName').textContent = medal.name; $('medalBack').textContent = run.phaseNum;
+  $('medal').style.setProperty('--m', medal.m); $('medal').style.setProperty('--md', medal.md); $('medalName').textContent = `${medal.name} · ${STAGES[run.peak].name}`; $('medalBack').textContent = run.phaseNum;
   $('newBest').hidden = !(daily ? isDailyBest : isBest);
-  const um = $('unlockMsg'); um.hidden = !fresh.length; if (fresh.length) um.textContent = `Unlocked the ${fresh.map((f) => f.name).join(' + ')} trail!`;
+  const freshSkins = SKINS.filter((k) => skinOpen(k) && !run.unlockedAtStart.includes(k.id));
+  const um = $('unlockMsg'); um.hidden = !fresh.length && !freshSkins.length; um.innerHTML = '';
+  if (freshSkins.length) um.innerHTML += `<div>New skin unlocked!</div><div class="unlock-skins">${freshSkins.map((k) => `<span><img alt="" src="${thumb(k.id, 2)}">${k.name}</span>`).join('')}</div>`;
+  if (fresh.length) um.innerHTML += `<div>Unlocked the ${fresh.map((f) => f.name).join(' + ')} trail!</div>`;
 }
 function showMenu() {
   state = 'menu'; clearThings(); player.visible = true; run = freshRun(); run.biome = 0;
   for (const id of ['over', 'pauseMenu', 'hud']) $(id).hidden = true; $('menu').hidden = false; $('combo').textContent = ''; $('powers').innerHTML = ''; $('powers').dataset.key = '';
   $('bestLine').textContent = `Best: ${best}`;
   $('dailyLine').textContent = dailyBest ? `Today's best: ${dailyBest}` : 'Same level for everyone today';
-  const wrap = $('trails'); wrap.innerHTML = '';
-  for (const tr of TRAILS) {
-    const b = document.createElement('button'); b.className = 'chip'; b.id = 'trail-' + tr.id;
-    const open = best >= tr.need; b.disabled = !open; b.setAttribute('aria-pressed', String(tr.id === trailId));
-    const dot = document.createElement('span'); dot.className = 'dot';
-    dot.style.background = tr.color === 'rainbow' ? 'conic-gradient(red, orange, yellow, lime, cyan, blue, magenta, red)' : tr.color;
-    b.append(dot, open ? tr.name : `${tr.name} · ${tr.need}`);
-    b.onclick = () => { trailId = tr.id; store.set('trail', trailId); showMenu(); };
-    wrap.append(b);
-  }
+  setHero(skinId, menuStage()); $('closet').hidden = true; $('evo').hidden = true;
+  $('closetThumb').src = thumb(skinId, menuStage(), 108);
+  $('closetLine').textContent = `${SKINS.filter(skinOpen).length}/${SKINS.length} skins · ${SKINS.find((k) => k.id === skinId).name}`;
 }
 $('legend').innerHTML = Object.values(POWERS).map((p) => `<div><span class="orb" style="--c:${p.color}"></span>${p.name}</div>`).join('');
 function setPaused(p) {
@@ -1021,6 +1329,8 @@ $('daily').onclick = () => startRun(true);
 $('again').onclick = () => startRun(daily);
 $('toMenu').onclick = showMenu;
 $('pause').onclick = () => setPaused(true);
+$('openCloset').onclick = () => { renderCloset(); $('menu').hidden = true; $('closet').hidden = false; };
+$('closetBack').onclick = showMenu;
 $('resume').onclick = () => setPaused(false);
 $('quit').onclick = showMenu;
 $('mute').onclick = () => { ensureAudio(); sndMode = (sndMode + 1) % 3; store.set('snd', sndMode); applySnd(); };
@@ -1032,7 +1342,7 @@ window.addEventListener('pointermove', (e) => {
 });
 
 // ============ main loop ============
-const pmult = () => (run.timers.double > 0 ? 2 : 1) * (run.phase.id === 'chill' ? 2 : 1);
+const pmult = () => (run.timers.double > 0 ? 2 : 1) * (run.phase.id === 'chill' ? 2 : 1) * STAGES[run.stage].mult;
 const clock = new THREE.Clock();
 function grabPower(e) {
   const k = e.kind; sndPower(); burst(e.x, e.y, 12, POWERS[k].color, 6, 0.8);
@@ -1043,7 +1353,8 @@ function grabPower(e) {
   toast(POWERS[k].name.toUpperCase() + '!');
 }
 function update(rdt) {
-  const dt = run.timers.zen > 0 && state === 'play' ? rdt * 0.55 : rdt;
+  run.slow = Math.max(0, run.slow - rdt);
+  const dt = rdt * (run.timers.zen > 0 && state === 'play' ? 0.55 : 1) * (run.slow > 0 ? 0.3 : 1);
   run.t += dt;
   run.px = -halfW * 0.42;
   const turbo = run.timers.chili > 0;
@@ -1073,6 +1384,21 @@ function update(rdt) {
 
   // blink
   const bl = (run.t % 3.2) < 0.12 ? 0.1 : 1; for (const e of eyes) e.scale.y = bl;
+  if (heroBody) {
+    const ud = heroBody.userData, flap = holding ? 22 : 12;
+    for (const w of ud.wings) w.rotation.z = Math.sin(run.t * flap) * 0.45 + 0.1;
+    if (ud.cape) ud.cape.rotation.z = -(0.75 + Math.sin(run.t * 9) * 0.14 + clamp(-run.vy * 0.03, -0.3, 0.4));
+    ud.feet.forEach((f, i) => { f.rotation.z = Math.sin(run.t * 16 + i * 3) * 0.4; });
+    ud.flames.forEach((f, i) => { f.scale.set(1, 1 + Math.sin(run.t * 24 + i * 2) * 0.3, 1); });
+    if (ud.blinker) ud.blinker.visible = Math.floor(run.t * 3) % 2 === 0;
+    if (ud.halo) { ud.halo.position.y = 1.0 + Math.sin(run.t * 3) * 0.06; ud.halo.rotation.z += rdt * 2; }
+    if (ud.aura) { ud.aura.scale.setScalar(1 + Math.sin(run.t * 5) * 0.08); ud.aura.material.opacity = 0.15 + Math.sin(run.t * 7) * 0.05; }
+    ud.orbs.forEach((o, i) => { const a = run.t * 3 + i * 2.09; o.position.set(Math.cos(a) * 1.05, Math.sin(a * 0.7) * 0.35 + 0.1, Math.sin(a) * 1.05); });
+    heroPop = Math.max(0, heroPop - rdt);
+    heroBody.scale.setScalar(STAGES[heroStage].scale * (1 + Math.sin(heroPop * 28) * heroPop * 0.35));
+    if (heroStage >= 4 && player.visible && Math.random() < 0.5) { const a = Math.random() * 6.28; spark(player.position.x + Math.cos(a) * 1.1, player.position.y + Math.sin(a) * 1.1, 0.5, -2, 0.5, 0, ['#ffe26b', '#ffffff', '#ff8fd1'][Math.floor(Math.random() * 3)], 0.22, 0.6, 0, 0.98, 1); }
+  }
+
 
   if (state === 'menu') {
     run.py = Math.sin(run.t * 2) * 0.8 + 2; player.position.set(0, run.py, 0); player.rotation.z = Math.sin(run.t * 2) * 0.15;
@@ -1098,20 +1424,21 @@ function update(rdt) {
     else { run.vy += (tooting ? 30 : -24) * dt; run.vy = clamp(run.vy, -13, 11); }
     if (run.started) run.py += run.vy * dt;
     if (tooting) {
-      if (!infinite) run.gas = Math.max(0, run.gas - 26 * dt);
+      if (!infinite) run.gas = Math.max(0, run.gas - 26 * dt * STAGES[run.stage].gas);
+      if (run.stage >= 2 && Math.random() < 0.25 * run.stage) spark(run.px - 0.7, run.py - 0.3, 0.3, -run.speed * 0.5 - 4, -2 + Math.random() * 3, 0, run.stage >= 4 ? `hsl(${Math.floor(Math.random() * 360)}, 90%, 65%)` : run.stage === 3 ? '#ffe26b' : '#ffffff', 0.25, 0.5);
       tootTimer -= dt; if (tootTimer <= 0) { sndToot(); tootTimer = 0.14; }
       spawnPuff(run.px - 0.6, run.py - 0.3, -run.speed * 0.4 - 3, -3 + Math.random() * 2, turbo ? 1.3 : 1, turbo ? (Math.random() < 0.5 ? '#ff8a1f' : '#ffd23f') : null);
     } else { run.gas = Math.min(100, run.gas + (infinite ? 40 : 5) * dt); tootTimer = 0; }
     if (run.py > PLAY_H) { run.py = PLAY_H; run.vy = Math.min(run.vy, -2); }
     if (run.py < -PLAY_H + 0.15) {
-      if (run.shield || turbo || easy || run.invuln > 0) { run.py = -PLAY_H + 0.15; run.vy = 11; if (!easy && !turbo && run.invuln <= 0) hurt('FACEPLANT!', null); }
+      if (run.shield || turbo || easy || run.invuln > 0 || run.stage === 4) { run.py = -PLAY_H + 0.15; run.vy = 11; if (!easy && !turbo && run.invuln <= 0) hurt('FACEPLANT!', null); }
       else die('FACEPLANT!');
     }
     player.position.set(run.px, run.py, 0);
     player.rotation.z = lerp(player.rotation.z, run.vy * 0.04, 0.2);
     const sq = tooting ? 1 + Math.sin(run.t * 40) * 0.06 : 1; hero.scale.set(1 / sq, sq, 1);
     player.visible = run.invuln > 0 ? Math.floor(run.t * 20) % 2 === 0 : true;
-    shieldMesh.visible = run.shield; shieldMesh.rotation.y += dt; shieldMesh.scale.setScalar(1 + Math.sin(run.t * 6) * 0.04);
+    shieldMesh.visible = run.shield; shieldMesh.rotation.y += dt; shieldMesh.scale.setScalar(STAGES[run.stage].scale * (1 + Math.sin(run.t * 6) * 0.04));
     magnetRing.visible = run.timers.magnet > 0; magnetRing.rotation.z += dt * 3; magnetRing.scale.setScalar(1 + (run.t % 0.6));
 
     // phase timing
@@ -1119,7 +1446,7 @@ function update(rdt) {
     // spawning
     if (run.started) run.spawnIn -= scroll * dt;
     if (ph === 'chill') {
-      if (run.spawnIn <= 0) { const y = Math.sin(run.t * 1.7) * 5; add(Math.random() < 0.15 ? 'gold' : 'bean', halfW + 2, y); run.spawnIn = 0.9; }
+      if (run.spawnIn <= 0) { const y = Math.sin(run.t * 1.7) * 5; add(Math.random() < 0.08 ? 'gem' : Math.random() < 0.15 ? 'gold' : 'bean', halfW + 2, y); run.spawnIn = 0.9; }
     } else if (ph !== 'boss' && run.spawnIn <= 0) spawnPattern();
     updateBoss(dt);
     if (run.t - run.lastBean > 1.4 && run.combo > 0) { run.combo = 0; $('combo').textContent = ''; }
@@ -1138,6 +1465,7 @@ function update(rdt) {
     p.m.scale.setScalar((0.6 + q * 1.6) * p.size); p.m.material.opacity = 0.8 * (1 - q);
   }
 
+  updateSparks(dt); updateRings(rdt); if (state !== 'pause') ambient(rdt, scroll);
   { const sx = player.position.x, gy = terrainH(sx - layers[layers.length - 1].tiles[0].position.x, 0), hgt = Math.max(0, player.position.y - gy);
     playerShadow.visible = player.visible && state !== 'dead'; playerShadow.position.set(sx, gy + 0.03, 0);
     playerShadow.scale.setScalar(clamp(1.2 - hgt * 0.06, 0.35, 1.2)); shadowMat.opacity = clamp(0.38 - hgt * 0.025, 0.06, 0.38); }
@@ -1152,7 +1480,8 @@ function update(rdt) {
     const f = $('fuel'), inf = run.phase.id === 'chill' || turbo;
     f.style.transform = `scaleX(${inf ? 1 : run.gas / 100})`; f.classList.toggle('low', !inf && run.gas < 25); f.classList.toggle('inf', inf);
     $('gasLabel').textContent = inf ? 'Gas · unlimited' : 'Gas';
-    const m = pmult(); $('mult').hidden = m === 1; $('mult').textContent = 'x' + m;
+    const m = pmult(); $('mult').hidden = m === 1; $('mult').textContent = 'x' + +m.toFixed(2);
+    renderEvo();
     const ph = run.phase; $('progFill').style.transform = `scaleX(${clamp(ph.len ? run.phaseD / ph.len : ph.time ? run.phaseT / ph.time : 0, 0, 1)})`;
     renderPowers();
   }
@@ -1182,11 +1511,13 @@ function updateThings(dt, scroll) {
       if (e.type === 'pigeon') { e.x -= 2 * dt; e.y = e.baseY + Math.sin(run.t * 3 + e.phase) * 0.9; const w = e.mesh.getObjectByName('wing'); if (w) w.rotation.x = Math.sin(run.t * 22) * 0.7; }
       if (e.type === 'bee') { e.x += scroll * 0.25 * dt; e.y += clamp(py - e.y, -2.6 * dt, 2.6 * dt); e.y += Math.sin(e.t * 9) * 0.02; e.mesh.traverse((c) => { if (c.name === 'wing') c.rotation.x = Math.sin(e.t * 60) * 0.6; }); }
       if (e.type === 'spikeball') { e.mesh.rotation.z += dt * 1.5; if (e.drift) e.y = e.baseY + Math.sin(run.t * 1.4) * 1.2; }
+      if (e.type === 'gem') { e.mesh.rotation.y += dt * 2; e.y = e.baseY + Math.sin(e.t * 3) * 0.25; if (Math.random() < 0.15) spark(e.x + (Math.random() - 0.5), e.y + (Math.random() - 0.5), 0.5, 0, 0.5, 0, '#e0c8ff', 0.2, 0.5, 0, 1, 1); }
       if (e.type === 'bean' || e.type === 'gold') { e.mesh.rotation.y += dt * 3; if (e.drift) e.y = e.baseY + Math.sin(run.t * 1.4) * 1.2; }
       if (e.type === 'power') { e.y = e.baseY + Math.sin(e.t * 2.5) * 0.3; const ic = e.mesh.getObjectByName('icon'); if (ic) ic.rotation.y += dt * 2.5; }
       if (e.type === 'spinner') { e.mesh.rotation.z += e.spin * dt; }
-      if ((e.type === 'bean' || e.type === 'gold') && run.timers.magnet > 0) {
-        const dx = px - e.x, dy = py - e.y, d = Math.hypot(dx, dy); if (d < 6.5) { e.x += dx / d * 16 * dt; e.y += dy / d * 16 * dt; e.baseY = e.y; e.drift = false; }
+      const pull = run.timers.magnet > 0 ? 6.5 : STAGES[run.stage].pull;
+      if ((e.type === 'bean' || e.type === 'gold' || e.type === 'gem') && pull > 0 && playing) {
+        const dx = px - e.x, dy = py - e.y, d = Math.hypot(dx, dy); if (d < pull && d > 0.01) { const sp = run.timers.magnet > 0 ? 16 : 10; e.x += dx / d * sp * dt; e.y += dy / d * sp * dt; e.baseY = e.y; e.drift = false; }
       }
     }
     e.mesh.position.set(e.x, e.y, 0);
@@ -1197,12 +1528,19 @@ function updateThings(dt, scroll) {
         run.combo = run.t - run.lastBean < 1.4 ? run.combo + 1 : 1; run.lastBean = run.t; run.beans++;
         const cm = 1 + Math.floor(run.combo / 3); run.topCombo = Math.max(run.topCombo, cm);
         run.pts += (e.type === 'gold' ? 50 : 10) * cm * pmult(); run.gas = Math.min(100, run.gas + 16);
-        sndBean(run.combo); burst(e.x, e.y, 5, '#ffd23f', 5, 0.5);
+        sndBean(run.combo); burst(e.x, e.y, 3, '#ffd23f', 4, 0.4); gainXp(e.type === 'gold' ? 4 : 1);
+        sparkBurst(e.x, e.y, e.type === 'gold' ? 26 : 10, e.type === 'gold' ? ['#ffd23f', '#ffffff', '#fff3a0'] : ['#ffd23f', '#ff8a6a', '#ffffff'], e.type === 'gold' ? 8 : 5, 0.3, 0.45);
+        if (e.type === 'gold') ring(e.x, e.y, '#ffd23f', 1.8, 0.35);
         $('combo').textContent = run.combo >= 3 ? `${run.combo} BEAN COMBO · x${cm}` : '';
         if ([10, 20, 35, 50].includes(run.combo)) { toast(['BEANTASTIC!', 'GASSY!!', 'BEAN LORD!', 'LEGENDARY TOOTER'][[10, 20, 35, 50].indexOf(run.combo)]); shake = 0.3; }
         removeAt(i); continue;
       }
-      if (e.type === 'power' && d < e.r + 0.6) { grabPower(e); removeAt(i); continue; }
+      if (e.type === 'power' && d < e.r + 0.6) { grabPower(e); ring(e.x, e.y, POWERS[e.kind].color, 2.6, 0.45); sparkBurst(e.x, e.y, 30, [POWERS[e.kind].color, '#ffffff'], 8, 0.35, 0.6); removeAt(i); continue; }
+      if (e.type === 'gem' && d < e.r + 0.6) {
+        gainXp(8); run.pts += 25 * pmult(); tone('sine', 1046, 2093, 0.25, 0.15); tone('sine', 1568, 0, 0.3, 0.1, 0.06);
+        sparkBurst(e.x, e.y, 36, ['#b07cff', '#e0c8ff', '#ffffff'], 9, 0.35, 0.6); ring(e.x, e.y, '#b07cff', 2.4, 0.4); toast('EVO GEM +8');
+        removeAt(i); continue;
+      }
       if (e.type === 'spinner') {
         let hit = false, near = Infinity; const a = e.mesh.rotation.z;
         for (const { r } of e.balls) { const bx = e.x + Math.cos(a) * r, by = e.y + Math.sin(a) * r, bd = Math.hypot(bx - px, by - py); near = Math.min(near, bd); if (bd < 0.5 + 0.45) hit = true; }
@@ -1212,7 +1550,7 @@ function updateThings(dt, scroll) {
         if (d < e.r + 0.45) {
           const how = { pigeon: 'BONK!', spikeball: 'POP!', bee: 'STUNG!', gull: 'SWOOPED!', egg: 'EGGED!' }[e.type];
           hurt(how, i); if (state !== 'play') break; continue;
-        } else if (!e.passed && e.x < px) { e.passed = true; if (d < e.r + 1.3 && e.type !== 'egg') { run.pts += 25 * pmult(); toast('CLOSE CALL +25'); } }
+        } else if (!e.passed && e.x < px) { e.passed = true; if (d < e.r + 1.3 && e.type !== 'egg') { run.pts += 25 * pmult(); gainXp(1); toast('CLOSE CALL +25'); } }
       }
     }
     if (e.x < -halfW - 5 || e.x > halfW + 14 || Math.abs(e.y) > 20) removeAt(i);
@@ -1226,7 +1564,8 @@ function frame() {
   requestAnimationFrame(frame);
 }
 // test hook (only with #test in the URL)
-if (location.hash === '#test') window.__t = { get run() { return run; }, enterPhase, get boss() { return boss; } };
+if (location.hash === '#test') window.__t = { get run() { return run; }, enterPhase, get boss() { return boss; }, gainXp, get life() { return life; }, store };
+setHero(skinId, menuStage());
 showMenu();
 frame();
 </script>
