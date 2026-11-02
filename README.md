@@ -1,6 +1,14 @@
 # Toot Rocket
 
-A silly one-thumb phone game. Hold to toot upward, eat beans for gas and combos, dodge pigeons and spikeballs.
+A silly one-thumb phone game. Hold to toot upward, eat beans for gas and combos, survive the phases, grab power-ups and beat the King Pigeon.
+
+## How a run flows
+
+Cruise → Snack Zone (easy mode, free gas, enemies turn into gold beans) → Danger Rush → King Pigeon boss → Victory Snacks → next world (Bean Meadow, Sunset Canyon, Swamp Night, Candy Clouds), each loop a bit harder.
+
+- **Enemies:** pigeons, spikeball walls (some drift), bees that chase you, gulls that dive-bomb after a warning, spinning spike bars.
+- **Power-ups:** Shield (blocks one hit), Magnet, Turbo (chili: invincible and smashes enemies), Slow-mo, x2 points.
+- **Boss:** dodge the eggs and grab chilis to shoot fire toots at the King Pigeon.
 
 ## Play it in a browser
 
@@ -8,8 +16,7 @@ A silly one-thumb phone game. Hold to toot upward, eat beans for gas and combos,
 python3 -m http.server 8000
 ```
 
-Then open http://localhost:8000 (or your computer's IP on your phone, same Wi-Fi).
-Must be served over HTTP, not opened as a file, so the Blender models can load.
+Then open http://localhost:8000 (or your computer's IP on your phone, same Wi-Fi). P or Esc pauses.
 
 ## Add your Blender stuff
 
